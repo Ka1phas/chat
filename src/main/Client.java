@@ -18,7 +18,9 @@ import java.util.Scanner;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.JTextField;
@@ -30,17 +32,23 @@ import javax.swing.text.StyledDocument;
 
 public class Client extends JFrame implements ActionListener, KeyListener{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 12L;
 	private DatagramSocket socket;
 	private DatagramPacket packet;
 	private byte[] buffer;
 	private JTextField input;
 	private JTextPane output;
 	private JButton sendButton;
-	private ArrayList<String> clientNames;
+	private ArrayList<String> userNames;
+	private String name;
 	
 	public Client(){
 		
-		clientNames = new ArrayList<String>();
+		name = "YOU (no name choosen)";
+		userNames = new ArrayList<String>();
 		addKeyListener(this);
 		input = new JTextField();
 		input.addKeyListener(this);
@@ -49,6 +57,9 @@ public class Client extends JFrame implements ActionListener, KeyListener{
 		sendButton.addActionListener(this);
 		JScrollPane sp = new JScrollPane(output);
 		JPanel UserPanel = new JPanel();
+		JRadioButton onlineB = new JRadioButton(name, true);
+		Box userBox = Box.createVerticalBox();
+		userBox.add(onlineB);
 		
 		Box box = Box.createHorizontalBox();
 		box.add(input);
@@ -61,13 +72,14 @@ public class Client extends JFrame implements ActionListener, KeyListener{
 		//add(output, BorderLayout.CENTER);
 		add(sp, BorderLayout.CENTER);
 		add(box, BorderLayout.SOUTH);
+		add(userBox, BorderLayout.EAST);
 		setVisible(true);
 		
 		
 		
 		try {
 			socket = new DatagramSocket();
-			new ClientThread(output, socket).start();
+			new ClientThread(output, socket, this).start();
 			
 		}catch(SocketException e){
 			e.printStackTrace();
@@ -104,6 +116,11 @@ public class Client extends JFrame implements ActionListener, KeyListener{
 		
 		
 	}
+	
+	public void addUserName(String user) {
+		userNames.add(user);
+		
+	}
 
 	@Override
 	public void keyTyped(KeyEvent e) {
@@ -132,10 +149,12 @@ class ClientThread extends Thread {
 	DatagramSocket socket;
 	StyledDocument doc;
 	Style style;
+	private Client client;
 	
-	public ClientThread(JTextPane output, DatagramSocket socket) {
+	public ClientThread(JTextPane output, DatagramSocket socket, Client client) {
 		this.output = output;
 		this.socket = socket;
+		this.client = client;
 		doc = output.getStyledDocument();
 		style = output.addStyle("styloo", null);
 	}
