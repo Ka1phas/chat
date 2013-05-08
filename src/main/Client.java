@@ -46,7 +46,7 @@ public class Client extends JFrame implements ActionListener, KeyListener{
 	private String name;
 	
 	public Client(){
-		
+		//Kommentar
 		name = "YOU (no name choosen)";
 		userNames = new ArrayList<String>();
 		addKeyListener(this);
