@@ -1,4 +1,4 @@
-package main;
+package Server;
 import java.net.*;
 import java.io.*;
 import java.util.ArrayList;
@@ -9,10 +9,16 @@ public class Server {
 	private DatagramSocket server;
 	private DatagramPacket packet;
 	private byte[] buffer;
-	final static String version = "v0.1";
+	private CommandListener cmdL;
+	private Commands Commands;
+	final static String version = "0.1";
 	final static int serverPort = 4711;
 	
 	public Server() {
+		Commands = new Commands(this);
+		cmdL = new CommandListener(this);
+		cmdL.start();
+		
 		clients = new ArrayList<ClientInfo>();
 		buffer = new byte[1024];
 		try {
@@ -27,6 +33,11 @@ public class Server {
 		} finally {
 			server.close();
 		}
+		
+	}
+	
+	public void exec(String cmd) {
+		Commands.parse(cmd);
 	}
 
 	public static void main(String[] args) {
