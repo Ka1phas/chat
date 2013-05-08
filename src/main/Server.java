@@ -9,12 +9,15 @@ public class Server {
 	private DatagramSocket server;
 	private DatagramPacket packet;
 	private byte[] buffer;
-
+	final static String version = "v0.1";
+	final static int serverPort = 4711;
+	
 	public Server() {
 		clients = new ArrayList<ClientInfo>();
 		buffer = new byte[1024];
 		try {
-			server = new DatagramSocket(4711);
+			server = new DatagramSocket(serverPort);
+			System.out.println("Listening to Port "+ serverPort +" now.");
 			recieve();
 		} catch (SocketException e) {
 			System.out.println("can't open Socket");
@@ -27,6 +30,7 @@ public class Server {
 	}
 
 	public static void main(String[] args) {
+		System.out.println("Starting server...");
 		new Server();
 	}
 
